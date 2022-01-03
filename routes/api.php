@@ -26,8 +26,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/blog','App\Http\Controllers\BlogController@index');
 Route::get('/blog/{id}','App\Http\Controllers\BlogController@show');
 
- Route::get('/categoryBlogs/{id}','App\Http\Controllers\CatetoryController@categoryBlogs');
- Route::get('/subcategoryBlogs/{id}','App\Http\Controllers\SubcategoryController@subcategoryBlogs');
+Route::get('/categoryBlogs/{id}','App\Http\Controllers\CatetoryController@categoryBlogs');
+Route::get('/subcategoryBlogs/{id}','App\Http\Controllers\SubcategoryController@subcategoryBlogs');
 
 Route::post('/register','App\Http\Controllers\AuthController@register');
 Route::post('/login','App\Http\Controllers\AuthController@login');
@@ -36,6 +36,7 @@ Route::post('/login','App\Http\Controllers\AuthController@login');
 // routes for auth and admin users
 Route::group(['middleware' => ['auth:sanctum','check_role']], function(){
     Route::post('/logout','App\Http\Controllers\AuthController@logout');
+    
     Route::post('/blog','App\Http\Controllers\BlogController@store');
     Route::put('/blog/{id}','App\Http\Controllers\BlogController@update');
     Route::delete('/blog/{id}','App\Http\Controllers\BlogController@destroy');

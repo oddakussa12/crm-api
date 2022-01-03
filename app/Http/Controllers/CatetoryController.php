@@ -87,7 +87,8 @@ class CatetoryController extends Controller
         $blogs = Blog::where('category_id',$categoryId)->get();
         if(!$blogs->isEmpty()){
             foreach($blogs as $blog){
-                $blog->path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+                $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+                $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
             }
             return $blogs;
         }else{

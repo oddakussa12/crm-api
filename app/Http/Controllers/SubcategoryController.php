@@ -98,6 +98,10 @@ class SubcategoryController extends Controller
     public function subcategoryBlogs($subcategoryId){
         $blogs = Blog::where('subcategory_id',$subcategoryId)->get();
         if(!$blogs->isEmpty()){
+            foreach($blogs as $blog){
+                $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+                $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
+            }
             return $blogs;
         }else{
             return response()->json(['error' => 'No blog found in this Subcategory'], 404);

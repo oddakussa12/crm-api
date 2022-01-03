@@ -14,7 +14,8 @@ class BlogController extends Controller
         // return "hi check middle ware";
         $blogs = Blog::all();
         foreach($blogs as $blog){
-            $blog->path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+            $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+            $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
         }
         return $blogs;
     }
@@ -27,21 +28,27 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         $image = $request->file('file');
-        if($request->hasFile('file')){
+        $image2 = $request->file('thumbnail');
+        if($request->hasFile('file') && $request->hasFile('thumbnail')){
             $validator = Validator::make($request->all(), [
-                'title' => 'required',
-                'description' => 'required',
+                'title'         => 'required',
+                'description'   => 'required',
+                'thumbnail'     => 'mimes:jpeg,jpg,png,gif|required|max:10000', //kb
             ]);
             if($validator->fails()){
                 return response()->json(['errors'=>$validator->errors()]);
             }
 
             $name = rand().'.'.$image->getClientOriginalName();
+            $name2 = rand().'.'.$image2->getClientOriginalName();
             // $image->move(public_path('/uploads'),$name);
             $image->storeAs('public/',$name);
+            $image2->storeAs('public/',$name2);
+
             $blog = new Blog();
             $blog->title = $request->title;
             $blog->file = $name;
+            $blog->thumbnail = $name2;
             $blog->description = $request->description;
             if($request->category_id){
                 $blog->category_id = $request->category_id;
@@ -67,7 +74,8 @@ class BlogController extends Controller
     {
         $blog = Blog::where('id',$id)->first();
         if($blog != null){
-            $blog->path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+            $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+            $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
             return $blog;
         }else{
             return response()->json(['error' => 'Blog not found'], 404);
@@ -82,24 +90,32 @@ class BlogController extends Controller
    
     public function update(Request $request, $id)
     {
-        // return $request;
         $image = $request->file('file');
-        if($request->hasFile('file')){
+        $image2 = $request->file('thumbnail');
+        if($request->hasFile('file') && $request->hasFile('thumbnail')){
             $validator = Validator::make($request->all(), [
-                'title' => 'required',
-                'description' => 'required',
+                'title'         => 'required',
+                'description'   => 'required',
+                'thumbnail'     => 'mimes:jpeg,jpg,png,gif|required|max:10000', //kb
             ]);
             if($validator->fails()){
                 return response()->json(['errors'=>$validator->errors()]);
             }
 
             $name = rand().'.'.$image->getClientOriginalName();
+            $name2 = rand().'.'.$image2->getClientOriginalName();
+
             $image->storeAs('public/',$name);
+            $image2->storeAs('public/',$name2);
+
             $blog = Blog::where('id',$id)->first();
+
             $blog->title = $request->title;
             $blog->file = $name;
+            $blog->thumbnail = $name2;
             $blog->description = $request->description;
-             if($request->category_id){
+
+            if($request->category_id){
                 $blog->category_id = $request->category_id;
             }
             if($request->subcategory_id){
@@ -116,23 +132,6 @@ class BlogController extends Controller
         }else{
             return response()->json('Please choose a file');
         }
-        
-        // $validator = Validator::make($request->all(), [
-        //     'title' => 'required',
-        //     'file' => 'required',
-        //     'description' => 'required',
-        // ]);
-        // if($validator->fails()){
-        //     return response()->json(['errors'=>$validator->errors()]);
-        // }
-
-        // $blog = Blog::where('id',$id)->first();
-        // if($blog){
-        //     $blog->update($request->all()); 
-        //     return response()->json(['success' => 'Blog updated successfuly'], 200);
-        // }else{
-        //     return response()->json(['error' => 'Update unsuccessful, Blog not found'], 404);
-        // }  
     }
 
   
