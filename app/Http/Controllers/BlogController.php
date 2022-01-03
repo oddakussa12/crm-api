@@ -11,7 +11,11 @@ class BlogController extends Controller
    
     public function index()
     {
+        // return "hi check middle ware";
         $blogs = Blog::all();
+        foreach($blogs as $blog){
+            $blog->path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+        }
         return $blogs;
     }
 
@@ -22,27 +26,48 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'file' => 'required',
-            'description' => 'required',
-        ]);
-        if($validator->fails()){
-            return response()->json(['errors'=>$validator->errors()]);
+        $image = $request->file('file');
+        if($request->hasFile('file')){
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'description' => 'required',
+            ]);
+            if($validator->fails()){
+                return response()->json(['errors'=>$validator->errors()]);
+            }
+
+            $name = rand().'.'.$image->getClientOriginalName();
+            // $image->move(public_path('/uploads'),$name);
+            $image->storeAs('public/',$name);
+            $blog = new Blog();
+            $blog->title = $request->title;
+            $blog->file = $name;
+            $blog->description = $request->description;
+            if($request->category_id){
+                $blog->category_id = $request->category_id;
+            }
+            if($request->subcategory_id){
+                $blog->subcategory_id = $request->subcategory_id;
+            }
+            $blog->save();
+
+            if ($blog->exists) {
+                return response()->json(['success' => 'Blog created successfuly'], 200);
+            } else {
+                return response()->json(['error' => 'Error'], 422);
+            }
+            
+        }else{
+            return response()->json('Please choose a file');
         }
-        $blog = Blog::create($request->all());
-        if ($blog->exists) {
-            return response()->json(['success' => 'Blog created successfuly'], 200);
-         } else {
-            return response()->json(['error' => 'Error'], 422);
-         }
     }
 
    
     public function show($id)
     {
-        $blog = Blog::where('id',$id)->get();
-        if(!$blog->isEmpty()){
+        $blog = Blog::where('id',$id)->first();
+        if($blog != null){
+            $blog->path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
             return $blog;
         }else{
             return response()->json(['error' => 'Blog not found'], 404);
@@ -57,22 +82,57 @@ class BlogController extends Controller
    
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'file' => 'required',
-            'description' => 'required',
-        ]);
-        if($validator->fails()){
-            return response()->json(['errors'=>$validator->errors()]);
-        }
+        // return $request;
+        $image = $request->file('file');
+        if($request->hasFile('file')){
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'description' => 'required',
+            ]);
+            if($validator->fails()){
+                return response()->json(['errors'=>$validator->errors()]);
+            }
 
-        $blog = Blog::where('id',$id)->first();
-        if($blog){
-            $blog->update($request->all()); 
-            return response()->json(['success' => 'Blog updated successfuly'], 200);
+            $name = rand().'.'.$image->getClientOriginalName();
+            $image->storeAs('public/',$name);
+            $blog = Blog::where('id',$id)->first();
+            $blog->title = $request->title;
+            $blog->file = $name;
+            $blog->description = $request->description;
+             if($request->category_id){
+                $blog->category_id = $request->category_id;
+            }
+            if($request->subcategory_id){
+                $blog->subcategory_id = $request->subcategory_id;
+            }
+            $blog->save();
+
+            if ($blog->exists) {
+                return response()->json(['success' => 'Blog updated successfuly'], 200);
+            } else {
+                return response()->json(['error' => 'Error'], 422);
+            }
+            
         }else{
-            return response()->json(['error' => 'Update unsuccessful, Blog not found'], 404);
-        }  
+            return response()->json('Please choose a file');
+        }
+        
+        // $validator = Validator::make($request->all(), [
+        //     'title' => 'required',
+        //     'file' => 'required',
+        //     'description' => 'required',
+        // ]);
+        // if($validator->fails()){
+        //     return response()->json(['errors'=>$validator->errors()]);
+        // }
+
+        // $blog = Blog::where('id',$id)->first();
+        // if($blog){
+        //     $blog->update($request->all()); 
+        //     return response()->json(['success' => 'Blog updated successfuly'], 200);
+        // }else{
+        //     return response()->json(['error' => 'Update unsuccessful, Blog not found'], 404);
+        // }  
     }
 
   

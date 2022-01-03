@@ -86,6 +86,9 @@ class CatetoryController extends Controller
     public function categoryBlogs($categoryId){
         $blogs = Blog::where('category_id',$categoryId)->get();
         if(!$blogs->isEmpty()){
+            foreach($blogs as $blog){
+                $blog->path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+            }
             return $blogs;
         }else{
             return response()->json(['error' => 'No blog found in this category'], 404);
