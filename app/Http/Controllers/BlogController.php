@@ -12,11 +12,11 @@ class BlogController extends Controller
     public function index()
     {
         // return "hi check middle ware";
-        $blogs = Blog::all();
-        foreach($blogs as $blog){
-            $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
-            $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
-        }
+        $blogs = Blog::paginate(5);
+        // foreach($blogs as $blog){
+        //     $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+        //     $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
+        // }
         return $blogs;
     }
 
@@ -27,55 +27,82 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
-        $image = $request->file('file');
-        $image2 = $request->file('thumbnail');
-        if($request->hasFile('file') && $request->hasFile('thumbnail')){
-            $validator = Validator::make($request->all(), [
-                'title'         => 'required',
-                'description'   => 'required',
-                'thumbnail'     => 'mimes:jpeg,jpg,png,gif|required|max:10000', //kb
-            ]);
-            if($validator->fails()){
-                return response()->json(['errors'=>$validator->errors()]);
-            }
+        
+        $validator = Validator::make($request->all(), [
+            'title'  => 'required',
+            'body'   => 'required',
+            'author' => 'required',
+            'date'   => 'date_format:Y-m-d H:i:s',
+        ]);
+        if($validator->fails()){
+            return response()->json(['errors'=>$validator->errors()]);
+        }
 
-            $name = rand().'.'.$image->getClientOriginalName();
-            $name2 = rand().'.'.$image2->getClientOriginalName();
-            // $image->move(public_path('/uploads'),$name);
-            $image->storeAs('public/',$name);
-            $image2->storeAs('public/',$name2);
+        $blog = new Blog();
+        $blog->title = $request->title;
+        $blog->body = $request->body;
+        $blog->author = $request->author;
+        $blog->date = $request->date;
+        $blog->save();
 
-            $blog = new Blog();
-            $blog->title = $request->title;
-            $blog->file = $name;
-            $blog->thumbnail = $name2;
-            $blog->description = $request->description;
-            if($request->category_id){
-                $blog->category_id = $request->category_id;
-            }
-            if($request->subcategory_id){
-                $blog->subcategory_id = $request->subcategory_id;
-            }
-            $blog->save();
-
-            if ($blog->exists) {
-                return response()->json(['success' => 'Blog created successfuly'], 200);
-            } else {
-                return response()->json(['error' => 'Error'], 422);
-            }
-            
-        }else{
-            return response()->json('Please choose a file');
+        if ($blog->exists) {
+            return $blog;
+        } else {
+            return response()->json(['error' => 'Error'], 422);
         }
     }
+
+    // public function store(Request $request)
+    // {
+    //     $image = $request->file('file');
+    //     $image2 = $request->file('thumbnail');
+    //     if($request->hasFile('file') && $request->hasFile('thumbnail')){
+    //         $validator = Validator::make($request->all(), [
+    //             'title'         => 'required',
+    //             'description'   => 'required',
+    //             'thumbnail'     => 'mimes:jpeg,jpg,png,gif|required|max:10000', //kb
+    //         ]);
+    //         if($validator->fails()){
+    //             return response()->json(['errors'=>$validator->errors()]);
+    //         }
+
+    //         $name = rand().'.'.$image->getClientOriginalName();
+    //         $name2 = rand().'.'.$image2->getClientOriginalName();
+    //         // $image->move(public_path('/uploads'),$name);
+    //         $image->storeAs('public/',$name);
+    //         $image2->storeAs('public/',$name2);
+
+    //         $blog = new Blog();
+    //         $blog->title = $request->title;
+    //         $blog->file = $name;
+    //         $blog->thumbnail = $name2;
+    //         $blog->description = $request->description;
+    //         if($request->category_id){
+    //             $blog->category_id = $request->category_id;
+    //         }
+    //         if($request->subcategory_id){
+    //             $blog->subcategory_id = $request->subcategory_id;
+    //         }
+    //         $blog->save();
+
+    //         if ($blog->exists) {
+    //             return response()->json(['success' => 'Blog created successfuly'], 200);
+    //         } else {
+    //             return response()->json(['error' => 'Error'], 422);
+    //         }
+            
+    //     }else{
+    //         return response()->json('Please choose a file');
+    //     }
+    // }
 
    
     public function show($id)
     {
         $blog = Blog::where('id',$id)->first();
         if($blog != null){
-            $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
-            $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
+            // $blog->file_path = 'https://blogpost.yenesera.com/storage/'.$blog->file;
+            // $blog->thumbnail_path = 'https://blogpost.yenesera.com/storage/'.$blog->thumbnail;
             return $blog;
         }else{
             return response()->json(['error' => 'Blog not found'], 404);
@@ -90,47 +117,33 @@ class BlogController extends Controller
    
     public function update(Request $request, $id)
     {
-        $image = $request->file('file');
-        $image2 = $request->file('thumbnail');
-        if($request->hasFile('file') && $request->hasFile('thumbnail')){
-            $validator = Validator::make($request->all(), [
-                'title'         => 'required',
-                'description'   => 'required',
-                'thumbnail'     => 'mimes:jpeg,jpg,png,gif|required|max:10000', //kb
-            ]);
-            if($validator->fails()){
-                return response()->json(['errors'=>$validator->errors()]);
-            }
+        
+        $validator = Validator::make($request->all(), [
+            'title'  => 'required',
+            'body'   => 'required',
+            'author' => 'required',
+            'date'   => 'date_format:Y-m-d H:i:s',
+        ]);
+        if($validator->fails()){
+            return response()->json(['errors'=>$validator->errors()]);
+        }
 
-            $name = rand().'.'.$image->getClientOriginalName();
-            $name2 = rand().'.'.$image2->getClientOriginalName();
+        $blog = Blog::where('id',$id)->first();
 
-            $image->storeAs('public/',$name);
-            $image2->storeAs('public/',$name2);
-
-            $blog = Blog::where('id',$id)->first();
-
+        if ($blog) {
             $blog->title = $request->title;
-            $blog->file = $name;
-            $blog->thumbnail = $name2;
-            $blog->description = $request->description;
-
-            if($request->category_id){
-                $blog->category_id = $request->category_id;
-            }
-            if($request->subcategory_id){
-                $blog->subcategory_id = $request->subcategory_id;
-            }
+            $blog->body = $request->body;
+            $blog->author = $request->author;
+            $blog->date = $request->date;
             $blog->save();
-
-            if ($blog->exists) {
-                return response()->json(['success' => 'Blog updated successfuly'], 200);
-            } else {
-                return response()->json(['error' => 'Error'], 422);
+            if($blog->exists){
+                return $blog;
+            }else{
+                return response()->json(['error' => 'Operation unsuccessful'],422);
             }
             
-        }else{
-            return response()->json('Please choose a file');
+        } else {
+            return response()->json(['error' => 'Blog with the given id not found'], 422);
         }
     }
 

@@ -11,16 +11,19 @@ class Blog extends Model
     
     protected $fillable = [
         'title',
-        'file',
-        'thumbnail',
-        'description',
-        'category_id',
-        'subcategory_id',
+        'author',
+        'body',
+        'date'
+        // 'file',
+        // 'thumbnail',
+        // 'description',
+        // 'category_id',
+        // 'subcategory_id',
     ];
-    public function category(){
-        return $this->belongsTo('App\Models\Catetory');
-    }
-    public function subcategory(){
-        return $this->belongsTo('App\Models\Subcategory');
-    }
+    // public function category(){
+    //     return $this->belongsTo('App\Models\Catetory');
+    // }
+    // public function subcategory(){
+    //     return $this->belongsTo('App\Models\Subcategory');
+    // }
 }
