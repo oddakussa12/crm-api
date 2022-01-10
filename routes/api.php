@@ -11,6 +11,9 @@ Route::get('/blog/{id}','App\Http\Controllers\BlogController@show');
 Route::get('/event','App\Http\Controllers\EventController@index');
 Route::get('/event/{id}','App\Http\Controllers\EventController@show');
 
+Route::get('/contact','App\Http\Controllers\ContactController@index');
+Route::get('/contact/{id}','App\Http\Controllers\ContactController@show');
+
 // routes for auth and admin users
 // Route::group(['middleware' => ['auth:sanctum','check_role']], function(){
     Route::post('/logout','App\Http\Controllers\AuthController@logout');
@@ -23,6 +26,10 @@ Route::get('/event/{id}','App\Http\Controllers\EventController@show');
     Route::put('/event/{id}','App\Http\Controllers\EventController@update');
     Route::delete('/event/{id}','App\Http\Controllers\EventController@destroy');
     Route::put('/event_archive/{id}','App\Http\Controllers\EventController@archive');
+
+    Route::post('/contact','App\Http\Controllers\ContactController@store');
+    Route::put('/contact/{id}','App\Http\Controllers\ContactController@update');
+    Route::delete('/contact/{id}','App\Http\Controllers\ContactController@destroy');
 
     Route::get('/category','App\Http\Controllers\CatetoryController@index');
     Route::get('/category/{id}','App\Http\Controllers\CatetoryController@show');
