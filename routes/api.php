@@ -22,6 +22,7 @@ Route::get('/event/{id}','App\Http\Controllers\EventController@show');
     Route::post('/event','App\Http\Controllers\EventController@store');
     Route::put('/event/{id}','App\Http\Controllers\EventController@update');
     Route::delete('/event/{id}','App\Http\Controllers\EventController@destroy');
+    Route::put('/event_archive/{id}','App\Http\Controllers\EventController@archive');
 
     Route::get('/category','App\Http\Controllers\CatetoryController@index');
     Route::get('/category/{id}','App\Http\Controllers\CatetoryController@show');
