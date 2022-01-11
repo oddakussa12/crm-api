@@ -77,18 +77,23 @@ class ContactController extends Controller
 
         $contact = Contact::where('id',$id)->first();
 
-        $contact->phone = $request->phone;
-        $contact->location = $request->location;
-        if($request->email){
-            $contact->email = $request->email;
+        if($contact != null){
+            $contact->phone = $request->phone;
+            $contact->location = $request->location;
+            if($request->email){
+                $contact->email = $request->email;
+            }
+            $contact->save();
+    
+            if ($contact->exists) {
+                return response()->json(['success' => 'Contact updated successfuly'], 200);
+            } else {
+                return response()->json(['error' => 'Error'], 422);
+            }
+        }else{
+            return response()->json(['Error' => 'Contact with the given id not found']);
         }
-        $contact->save();
 
-        if ($contact->exists) {
-            return response()->json(['success' => 'Contact updated successfuly'], 200);
-        } else {
-            return response()->json(['error' => 'Error'], 422);
-        }
     }
     
     public function destroy($id)

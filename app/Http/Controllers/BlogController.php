@@ -32,7 +32,7 @@ class BlogController extends Controller
             'title'  => 'required',
             'body'   => 'required',
             'author' => 'required',
-            'date'   => 'date_format:Y-m-d H:i:s',
+            'date'   => 'required|date_format:Y-m-d H:i:s',
         ]);
         if($validator->fails()){
             return response()->json(['errors'=>$validator->errors()]);
